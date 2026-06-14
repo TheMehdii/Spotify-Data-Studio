@@ -20,3 +20,36 @@ class Song:
         self.tempo = tempo
         self.time_signature = time_signature
         self.track_genre = track_genre
+
+    @property
+    def popularity(self):
+        return self._popularity
+    
+    @popularity.setter
+    def popularity(self, value):
+        val = int(value)
+        if not(0 <= val <= 100):
+            raise ValueError(f"Popularity range error ! . it must be in range (0-100) not {val}")
+        self._popularity = val
+
+    @property
+    def danceability(self):
+        return self._danceability
+    
+    @danceability.setter()
+    def danceability(self, value):
+        val = int(value)
+        if not(0 <= val <= 1):
+            raise ValueError(f"danceability range error ! . it must be in range (0-1) not {val}")
+        self._danceability = val  
+
+    @property
+    def energy(self):
+        return self._energy
+    
+    @energy.setter()
+    def energy(self, value):
+        val = int(value)
+        if not(0 <= val <= 1):
+            raise ValueError(f"energy range error ! . it must be in range (0-1) not {val}")
+        self._energy = val  
