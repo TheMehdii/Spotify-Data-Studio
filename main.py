@@ -16,14 +16,14 @@ class Song:
         self.acousticness = float(acousticness)
         self.instrumentalness = float(instrumentalness)
         self.liveness = float(liveness)
-        self.valecne = float(valence)
+        self.valence = float(valence)
         self.tempo = float(tempo)
         self.time_signature = int(time_signature)
         self.track_genre = track_genre
     
     def _check(self, Feature : str, val: float, min_v : float = 0.0, max_v : float = 1.0): # for avoid from repeat (dry)
         if not (min_v <= val <= max_v):
-            raise ValueError(f"{Feature}  range error ! it must be in range (1-100) not {val}")
+            raise ValueError(f"{Feature}  range error ! it must be in range ({min_v}-{max_v}) not {val}")
         else:
             return val
         
@@ -31,7 +31,7 @@ class Song:
     def popularity(self):
         return self._popularity
     
-    @popularity.setter
+    @popularity.setterval
     def popularity(self, value):
         self._popularity = self._check("popularity", value, 0, 100)
 
@@ -39,7 +39,7 @@ class Song:
     def danceability(self):
         return self._danceability
     
-    @danceability.setter()
+    @danceability.setter
     def danceability(self, value):
         self._danceability = self._check("danceability", value, 0, 1)
 
@@ -47,7 +47,7 @@ class Song:
     def energy(self):
         return self._energy
     
-    @energy.setter()
+    @energy.setter
     def energy(self, value):
         self._energy = self._check("energy", value, 0, 1)
 
@@ -55,31 +55,31 @@ class Song:
     def duration_ms(self):
         return  self._duration_ms
     
-    @duration_ms.setter()
+    @duration_ms.setter
     def duration_ms(self, value):
-        self._duration_ms = self._check("energy", value, 100000, 600000)
+        self._duration_ms = self._check("duration", value, 1000, 600000)
     
     @property
     def key(self):
         return self._key
     
-    @key.setter()
+    @key.setter
     def key(self, value):
-        self._key = self._check("key", value, 0, 15)
+        self._key = self._check("key", value, -1, 15)
 
     @property
-    def louadness(self):
-        return  self._louadness 
+    def loudness(self):
+        return  self._loudness 
     
-    @louadness.setter()
-    def louadness(self, value):
-        self._louadness = self._check("loadness", value, -35, -1)
+    @loudness.setter
+    def loudness(self, value):
+        self._loudness = self._check("loudness", value, -35, -1)
 
     @property
     def mode(self):
         return self._mode
     
-    @mode.setter()
+    @mode.setter
     def mode(self, value):
         self._mode =  self._check("mode", value, 0, 1)
 
@@ -87,7 +87,7 @@ class Song:
     def speechiness(self):
         return self._speechiness
     
-    @speechiness.setter()
+    @speechiness.setter
     def speechiness(self, value):
         self._speechiness = self._check("speechiness", value, 0, 1)
 
@@ -95,15 +95,15 @@ class Song:
     def acousticness(self):
         return self._acousticnees
     
-    @acousticness.setter()
-    def acousticnees(self, value):
-        self._acousticnees = self._check("acousticnees", value, 0, 1)
+    @acousticness.setter
+    def acousticness(self, value):
+        self._acousticness = self._check("acousticness", value, 0, 1)
 
     @property
     def instrumentalness(self):
         return self._instrumentalness
     
-    @instrumentalness.setter()
+    @instrumentalness.setter
     def instrumentalness(self, value):
         self._instrumentalness = self._check("instrumentalness", value, 0, 1)
     
@@ -111,24 +111,24 @@ class Song:
     def liveness(self):
         return self._liveness
     
-    @liveness.setter()
+    @liveness.setter
     def liveness(self, value):
         self._liveness = self._check("liveness", value, 0, 1)
 
     @property
-    def valecne(self):
-        return  self._valecne 
+    def valence(self):
+        return  self._valence 
     
-    @valecne.setter()
-    def valecne(self, value):
-        self._valecne = self._check("valecne", value, 0, 1)
+    @valence.setter
+    def valence(self, value):
+        self._valence = self._check("valence", value, 0, 1)
 
     @property
     def tempo(self):
         return self._tempo
     
     
-    @tempo.setter()
+    @tempo.setter
     def tempo(self, value):
         self._tempo = self._check("tempo", value, 70, 210)
     
@@ -136,9 +136,9 @@ class Song:
     def time_signature(self):
         return self._time_singnature
 
-    @time_signature.setter()
+    @time_signature.setter
     def time_signature(self, value):
-        self._time_signature = self._check("time_signature", value, 3, 5) 
+        self._time_signature = self._check("time_signature", value, 3, 7) 
 
     @property
     def track_id(self) :
