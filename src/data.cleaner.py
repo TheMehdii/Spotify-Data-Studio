@@ -30,8 +30,8 @@ class MedianImputer(BaseImputer) : #found missing data by using median
         return df_copy
     
 class KNNImputer(BaseImputer): #found missing data by using KNN
-    def __init__(self, neighbor : int = 5 ):
-        self.neighbor = neighbor
+    def __init__(self, n_neighbor : int = 5 ):
+        self.neighbor = n_neighbor
     
     def impute(self, df: pd.DataFrame, columns:list) -> pd.DataFrame :
         df_copy = df.copy()
@@ -46,7 +46,7 @@ class KNNImputer(BaseImputer): #found missing data by using KNN
         return df_copy
 
 
-#manage fart data 
+#   manage outlier data 
 
 class BaseOutlierHandler(ABC) : 
     @abstractmethod
@@ -61,8 +61,8 @@ class IQROutllierHandler(BaseOutlierHandler):
         df_copy = df.copy()
         for col in columns:
             if col in df_copy.columns and pd.api.types.is_numeric_dtype(df_copy[col]):
-                Q1 = df_copy.quantile(0.25) # first quarter : A number that is 25% of the numbers before it.
-                Q3 = df_copy.quantile(0.75) # second quarter : A number that is 75% of the numbers before it.
+                Q1 = df_copy[col].quantile(0.25) # first quarter : A number that is 25% of the numbers before it.
+                Q3 = df_copy[col].quantile(0.75) # second quarter : A number that is 75% of the numbers before it.
 
                 IQR = Q3 - Q1 #Interquartile range
 
@@ -70,6 +70,29 @@ class IQROutllierHandler(BaseOutlierHandler):
                 upper_b = Q3 + 1.5 * IQR
 
                 df_copy[col] = np.where(df_copy[col] < lower_b, lower_b, df_copy[col]) # Checking data with a lower bound
-                df_copy[col] = np.where(df_copy[col] < upper_b, upper_b, df_copy[col]) # Checking data with a upper bound
+                df_copy[col] = np.where(df_copy[col] > upper_b, upper_b, df_copy[col]) # Checking data with a upper bound
 
+        return df_copy
+
+class ZScoreOutlierHandler(BaseOutlierHandler):
+
+    def __init__(self, bound:float = 3.0):
+        self.bound = bound
+
+    def handle(self, df: pd.DataFrame, columns: list) -> pd.DataFrame :
+        df_copy = df.copy()
+
+        for col in columns:
+            if col in df_copy.columns and pd.api.types.is_numeric_dtype(df_copy[col]):
+
+                ava = df_copy[col].mean()
+                enh = df_copy[col].std()
+
+                if enh == 0:
+                    continue
+
+                z_score = (df_copy[col] - ava) / enh # https://en.wikipedia.org/wiki/Standard_score 
+
+                df_copy[col] = np.where(abs(z_score) > self.bound, ava, df_copy[col])
+        
         return df_copy
