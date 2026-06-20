@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib as plt
 from typing import List, Dict
+import seaborn as sns
 
 class DataAnalyzer:
     def __init__(self, songs : List):
@@ -37,5 +38,3 @@ class DataAnalyzer:
         features = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
         matrix = self.df[features].corr(method = 'pearson')
         return matrix        
-
-        
