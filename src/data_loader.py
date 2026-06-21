@@ -98,7 +98,7 @@ class Song:
 
     @property
     def acousticness(self):
-        return self._acousticnees
+        return self._acousticness
     
     @acousticness.setter
     def acousticness(self, value):

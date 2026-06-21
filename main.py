@@ -5,12 +5,14 @@ import src.data_cleaner
 
 import sys
 from time import sleep
+green = "\033[92m"
+cyan = "\033[96m"
+reset = "\033[0m"
+    
 
 
 def menu():
-    green = "\033[92m"
-    cyan = "\033[96m"
-    reset = "\033[0m"
+
     
     print(f"{cyan}╔═════════════════════════════════════════════════════════════════════════╗{reset}")
     print(f"{cyan}║{reset}           {green}Spotify Data Studio & Management System{reset}                       {cyan}║{reset}")
@@ -44,13 +46,14 @@ def main():
                 sleep(2)
                 df = loader.laod_data()
                 dataset_loaded = True
-                print("Dataset loaded successfully!")
+                print(f"{cyan}Dataset loaded successfully!{reset}")
+
                 sleep(2)
 
             elif choice =='2':
                 if not dataset_loaded :
                     print("\n Error : please load dataset first (option 1)")
-                    sleep(2)
+                    sleep(5)
                     continue
                 else:
                     print('wait ...')
@@ -62,27 +65,52 @@ def main():
                             sleep(2)
                             continue
                         elif choice2 == 'Mean':
+                            print('using Mean ...')
+                            sleep(2)
                             src.data_cleaner.MeanImputer()
+                            print('Mean used !')
+                            sleep(2)
                             break
                         elif choice2 == 'Median':
+                            print('using Median ...')
+                            sleep(2)
                             src.data_cleaner.MedianImputer()
+                            print('Median used !')
+                            sleep(2)
                             break
                         elif choice2 == "KNN":
+                            print('using KNN ...')
+                            sleep(2)
                             src.data_cleaner.KNNImputer()
+                            print('KNN used !')
+                            sleep(2)
                             break
             
             elif choice == '3':
-                choice3 = input('Which one ? (IQR / Z-Score)')
                 if not dataset_loaded:
                         print("\n Error: Please load the dataset first (Option 1).")
                         continue
-                print("\n Handling outliers (IQR/Z-Score)...")
-                sleep(2)
-                if choice3 == 'IQR':
-                    src.data_cleaner.IQROutllierHandler()
-                elif choice3 =='Z-Score':
-                    src.data_cleaner.ZScoreOutlierHandler()
-                
+                else:
+                    while True:
+                        choice3 = input('which one ? (IQR/Z-Score)')
+                        if (type(choice3) != str or (choice3 != 'IQR' and  choice3 !='Z-Score')):
+                            print('please give me correct option (IQR/Z-Score)')
+                            sleep(4)
+                            continue
+                        else:
+                            print("\n Handling outliers (IQR/Z-Score)...")
+                            sleep(2)
+                            if choice3 == 'IQR':
+                                src.data_cleaner.IQROutllierHandler()
+                                print('IQR used!')
+                                sleep(2)
+                                break
+                            elif choice3 =='Z-Score':
+                                src.data_cleaner.ZScoreOutlierHandler()
+                                print('Z-Score used!')
+                                sleep(2)
+                                break
+                        
             elif choice == '4':
 
                 if not dataset_loaded or df is None:
@@ -92,7 +120,7 @@ def main():
                 print("\n" + "="*20 + " Add a New Song " + "="*20)
                 try:
                     track_name = input("Enter track name: ").strip()
-                    artists = input("Enter artist(s): ").strip()
+                    artists = input("Enter artist: ").strip()
                     genre = input("Enter genre: ").strip()
                     
                     if not track_name or not artists or not genre:
@@ -118,6 +146,7 @@ def main():
                     from src.data_loader import Song
                     new_song = Song(
                         track_id=track_id, track_name=track_name, artists=artists, 
+                        album_name="Unknown",
                         popularity=popularity, duration_ms=default_audio_features['duration_ms'], 
                         danceability=default_audio_features['danceability'],
                         energy=default_audio_features['energy'],
