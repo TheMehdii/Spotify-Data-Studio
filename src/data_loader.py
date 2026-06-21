@@ -5,10 +5,11 @@ class Song:
     Featurs = ['track_id', 'artists', 'album_name', 'track_name', 'popularity', 'duration_ms', 'explicit', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature', 'track_genre']
    
     def __init__(self, track_id, artists, album_name, track_name, popularity, duration_ms, explicit, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature, track_genre):
-        self.track_id = track_id
-        self.artists = artists
-        self.album_name = album_name
-        self.track_name = track_name
+        self._track_id = track_id
+        self._artists = artists
+        self._album_name = album_name # (_) for avoid from settar error (read-only)
+        self._track_name = track_name
+        self._track_genre = track_genre
         self.popularity = int(popularity)
         self.duration_ms =  int(duration_ms)
         self.explicit = explicit if isinstance(explicit, bool) else (str(explicit).lower() == "true")
@@ -24,11 +25,10 @@ class Song:
         self.valence = float(valence)
         self.tempo = float(tempo)
         self.time_signature = int(time_signature)
-        self.track_genre = track_genre
     
     def _check(self, Feature : str, val: float, min_v : float = 0.0, max_v : float = 1.0): # for avoid from repeat (dry)
         if not (min_v <= val <= max_v):
-            raise ValueError(f"{Feature}  range error ! it must be in range ({min_v}-{max_v}) not {val}")
+            raise ValueError(f"{Feature}  range error ! it must be in range (({min_v})-({max_v})) not {val}")
         else:
             return val
         
@@ -174,7 +174,7 @@ class DataLoader:
     def laod_data(self):
         self.songs= []
         if not os.path.exists(self.file_path):
-            raise FileNotFoundError(f"{self.file_path} is not exists")
+            raise FileNotFoundError(f"{self.file_path} does not exists")
 
         with open(self.file_path, "r", encoding='utf-8') as file:
             for row in csv.DictReader(file):
@@ -190,7 +190,7 @@ class DataLoader:
                     )
                     self.songs.append(song)
                 except ValueError as e:
-                    print("we have {e} Error!")
+                    print(f"we have {e} Error!")
         
         return self.songs
     

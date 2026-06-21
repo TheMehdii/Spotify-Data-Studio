@@ -26,8 +26,11 @@ def menu():
 
 def main():
     visualizer = DataVisualizer(charts="charts")
-    
-    while True():
+    loader = DataLoader('Data/dataset.csv')
+    dataset_loaded = False
+    df = None
+
+    while True:
         menu()
         try:
             choice = input("Enter your choice (1-7): ").strip()
@@ -39,7 +42,7 @@ def main():
             elif choice == '1':
                 print("\n Loading dataset ...")
                 sleep(2)
-                df = DataLoader.laod_data('dataset.csv')
+                df = loader.laod_data()
                 dataset_loaded = True
                 print("Dataset loaded successfully!")
                 sleep(2)
@@ -71,9 +74,9 @@ def main():
             elif choice == '3':
                 choice3 = input('Which one ? (IQR / Z-Score)')
                 if not dataset_loaded:
-                        print("\n[!] Error: Please load the dataset first (Option 1).")
+                        print("\n Error: Please load the dataset first (Option 1).")
                         continue
-                print("\n[+] Handling outliers (IQR/Z-Score)...")
+                print("\n Handling outliers (IQR/Z-Score)...")
                 sleep(2)
                 if choice3 == 'IQR':
                     src.data_cleaner.IQROutllierHandler()
@@ -110,7 +113,7 @@ def main():
                         'tempo': 120.0
                     }
 
-                    track_id = str(len(df) + 1)
+                    track_id = str(len(loader.songs) + 1)
 
                     from src.data_loader import Song
                     new_song = Song(
@@ -125,11 +128,15 @@ def main():
                         liveness=default_audio_features['liveness'],
                         valence=default_audio_features['valence'],
                         tempo=default_audio_features['tempo'],
-                        genre=genre
+                        track_genre=genre,
+                        key=0,
+                        mode=1,
+                        explicit=False,
+                        time_signature=4
                     )
 
 
-                    DataLoader.append_song(new_song)
+                    loader.append_song(new_song)
 
                     
                     print("\n created successfully!")
