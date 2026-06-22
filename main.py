@@ -2,9 +2,10 @@ from src.data_loader import DataLoader, Song
 from src.data_analyzer import DataAnalyzer
 from src.data_visualizer import DataVisualizer
 import src.data_cleaner 
-
+import uuid # for generate random track_id by using hex
 import sys
 from time import sleep
+
 green = "\033[92m"
 cyan = "\033[96m"
 reset = "\033[0m"
@@ -141,12 +142,14 @@ def main():
                         'tempo': 120.0
                     }
 
-                    track_id = str(len(loader.songs) + 1)
+                    random_track_id = uuid.uuid4().hex[:22]
 
                     from src.data_loader import Song
                     new_song = Song(
-                        track_id=track_id, track_name=track_name, artists=artists, 
+                        track_id=random_track_id,
+                        artists=artists, 
                         album_name="Unknown",
+                        track_name=track_name,
                         popularity=popularity, duration_ms=default_audio_features['duration_ms'], 
                         danceability=default_audio_features['danceability'],
                         energy=default_audio_features['energy'],
@@ -168,9 +171,9 @@ def main():
                     loader.append_song(new_song)
 
                     
-                    print("\n created successfully!")
+                    print("\n new song created successfully and append!")
                     sleep(2)
-                    print(f" Generated Object: {new_song}")
+                    print(f" Generated Object: {str(new_song)}")
                     sleep(2)
 
                 except ValueError as ve:
@@ -185,7 +188,9 @@ def main():
                     continue
                 else :
                     print("\n Calculate Genre Insights & Correlation Matrix ...")
-                    DataAnalyzer.get_matrix(df)
+                    analyzer = DataAnalyzer(loader.songs)
+                    matx = analyzer.get_matrix()
+                    print(matx)
                 
             elif choice == '6':
                 if not dataset_loaded:
@@ -194,9 +199,11 @@ def main():
                     continue
                 else :
                     print("\n Generating Advanced Visualizations ...")
-                    DataVisualizer.box(df)
-                    DataVisualizer.heatmap_matrix(df)
-                    DataVisualizer.scatter(df)
+                    analyzer = DataAnalyzer(loader.songs)
+                    df_finall = analyzer.df # giving an dictionary of dataframe not list!
+                    DataVisualizer.box(df_finall)
+                    DataVisualizer.heatmap_matrix(df_finall)
+                    DataVisualizer.scatter(df_finall)
                     print("\n charts genertad and saved in 'charts' directory !")
                     sleep(2)
             

@@ -10,7 +10,7 @@ class DataAnalyzer:
         self.songs = songs
         self.df = self._convert_to_dataframe()
     
-    def _conver_to_dataframe(self) -> pd.DataFrame: #praivte method
+    def _convert_to_dataframe(self) -> pd.DataFrame: #praivte method
 
         if not self.songs:
             return pd.DataFrame() # empty table
@@ -35,6 +35,6 @@ class DataAnalyzer:
         if self.df.empty:
             return pd.DataFrame()
         
-        features = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
+        features = ['_danceability', '_energy', '_loudness', '_speechiness', '_acousticness', '_instrumentalness', '_liveness', '_valence', '_tempo']
         matrix = self.df[features].corr(method = 'pearson')
         return matrix        

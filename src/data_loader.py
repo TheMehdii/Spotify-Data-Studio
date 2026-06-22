@@ -139,7 +139,7 @@ class Song:
     
     @property
     def time_signature(self):
-        return self._time_singnature
+        return self._time_signature
 
     @time_signature.setter
     def time_signature(self, value):
@@ -195,16 +195,33 @@ class DataLoader:
         return self.songs
     
     def append_song(self, song: Song) :
+
         self.songs.append(song)
 
         vojod_file = os.path.exists(self.file_path)
+        next_col = 1
+
+        if vojod_file:
+            try:
+                with open(self.file_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    if len(lines) > 1:
+                        last_line = lines[-1].strip()
+                        last_index = last_line.split(',')[0]
+                        if last_index.isdigit():
+                            next_col = int(last_index) + 1
+            except Exception :
+                next_col = len(self.songs) + 13333333 # just a random number
+
 
         with open(self.file_path, "a", encoding= 'utf-8', newline='') as file :
-            writer = csv.DictWriter(file, fieldnames= song.Featurs) # write featurs for any song
+            fieldnames = [''] + song.Featurs # creating a col in dataset
+            writer = csv.DictWriter(file, fieldnames= fieldnames) # write featurs for any song
 
             if not vojod_file:
                 writer.writeheader() # if col is not exists it writes
             
             new_row = {field : getattr(song, field) for field in song.Featurs}      #getarr = access value of featurs whitout song.featurs and avoid repeat (dry)
+            new_row[''] = next_col
             writer.writerow(new_row)
 
