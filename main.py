@@ -188,9 +188,11 @@ def main():
                     continue
                 else :
                     print("\n Calculate Genre Insights & Correlation Matrix ...")
+                    sleep(3)
                     analyzer = DataAnalyzer(loader.songs)
-                    matx = analyzer.get_matrix()
-                    print(matx)
+                    analyzer.get_matrix()
+                    print("matrix generated !")
+                    sleep(3)
                 
             elif choice == '6':
                 if not dataset_loaded:
@@ -201,9 +203,11 @@ def main():
                     print("\n Generating Advanced Visualizations ...")
                     analyzer = DataAnalyzer(loader.songs)
                     df_finall = analyzer.df # giving an dictionary of dataframe not list!
-                    DataVisualizer.box(df_finall)
-                    DataVisualizer.heatmap_matrix(df_finall)
-                    DataVisualizer.scatter(df_finall)
+                    matx = analyzer.get_matrix()
+                    my_features = ['_danceability', '_energy', '_loudness', '_tempo']
+                    visualizer.box(df_befor= df_finall, df_after= None, featurs= my_features)
+                    visualizer.heatmap_matrix(matrix= matx)
+                    visualizer.scatter(df=df_finall)
                     print("\n charts genertad and saved in 'charts' directory !")
                     sleep(2)
             

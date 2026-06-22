@@ -7,27 +7,34 @@ class DataVisualizer:
     def __init__(self, charts = "charts" ): #name of output file
         self.charts = charts
         
-        if os.path.exists(self.charts):
+        if not os.path.exists(self.charts):
             os.makedirs(self.charts)
 
         sbn.set_theme(style="whitegrid") #backgrond of charts
     
     def box(self, df_befor : pd.DataFrame, df_after : pd.DataFrame, featurs: list) :
 
-        if df_befor.empty or df_after.empty:
+        if df_befor.empty :
             print("I can't found any data!")
             return
-        fig, axis = plt.subplots(1, 2, figsize=(14, 6)) #general shape of box-plot
+        
+        if df_after is None or df_after.empty :
+            fig, axis = plt.subplots(figsize=(10, 6))
+            sbn.boxenplot(data=df_befor[featurs], ax=axis, palette="vlag")
+            axis.set_title("Primary Data")
+            axis.tick_params(axis='x', rotation = 45)
+        else:
+            fig, axis = plt.subplots(1, 2, figsize=(14, 6)) #general shape of box-plot
 
-        # befor clean
-        sbn.boxenplot(data=df_befor[featurs], ax = axis[0], palette="vlag")
-        axis[0].set_title("Befor cleaning data")
-        axis[0].tick_params(axis='x', rotation = 45)
+            # befor clean
+            sbn.boxenplot(data=df_befor[featurs], ax = axis[0], palette="vlag")
+            axis[0].set_title("Befor cleaning data")
+            axis[0].tick_params(axis='x', rotation = 45)
 
-        # after clean
-        sbn.boxenplot(data=df_after[featurs], ax = axis[1], palette="Deep")
-        axis[1].set_title("After cleaning data")
-        axis[1].tick_params(axis='x', rotation = 45)
+            # after clean
+            sbn.boxenplot(data=df_after[featurs], ax = axis[1], palette="Deep")
+            axis[1].set_title("After cleaning data")
+            axis[1].tick_params(axis='x', rotation = 45)
 
         plt.tight_layout() # cut and edit
         plt.savefig(f"{self.charts}/box-chart.png")
@@ -54,6 +61,7 @@ class DataVisualizer:
         
         plt.tight_layout()
         plt.savefig(f"{self.charts}/scatter-chat.png")
+        plt.show()
     
     def heatmap_matrix(self, matrix : pd.DataFrame):
         if matrix.empty:

@@ -25,9 +25,9 @@ class DataAnalyzer:
         if self.df.empty:
             return pd.DataFrame()
         
-        numeric_featurs = ['popularity', 'duration_ms', 'danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
+        numeric_featurs = ['_popularity', '_duration_ms', '_danceability', '_energy', '_loudness', '_speechiness', '_acousticness', '_instrumentalness', '_liveness', '_valence', '_tempo']
 
-        partition = self.df.groupby('genre')[numeric_featurs].mean()
+        partition = self.df.groupby('_track_genre')[numeric_featurs].mean()
         return partition
 
     def get_matrix(self) -> pd.DataFrame:
