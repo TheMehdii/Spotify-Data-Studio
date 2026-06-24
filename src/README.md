@@ -1,5 +1,7 @@
 # 🎵 Spotify Data Studio: Advanced Music Data Management & Analytics System
 
+![Spotify](image/Spotify.png)
+
 An advanced, production-grade **Data Engineering and Interactive Analytics Dashboard** designed to securely load, clean, analyze, and visualize multi-dimensional music streaming data. This system is built from scratch utilizing modular design patterns and strict software engineering principles.
 
 ---
