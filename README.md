@@ -6,7 +6,7 @@ An advanced, production-grade **Data Engineering and Interactive Analytics Dashb
 
 ---
 
-## 🏛️ Project Architecture & OOP Principles
+## 🚀 Project Architecture & OOP Principles
 This project is built around a highly structured, decoupled **Object-Oriented Programming (OOP)** architecture rather than a simple scripting style. 
 
 * **Encapsulation:** Implemented defensive data auditing inside domain models (such as ensuring metrics like song popularity or acoustic attributes remain strictly within valid logical bounds).
