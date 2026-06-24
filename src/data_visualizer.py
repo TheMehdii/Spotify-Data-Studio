@@ -50,23 +50,27 @@ class DataVisualizer:
         if df.empty:
             return
         
-        plt.figure(figsize=(8, 6)) #draw chart
+        genres = ['acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient', 'anime', 'black-metal', 'bluegrass', 'blues', 'brazil']
+        
+        sbn.set_style("whitegrid")
+        plt.figure(figsize=(10, 6)) #draw chart
 
 
         if 'track_genre' in df.columns:
-            sbn.scatterplot(data=df, x='danceability', y = 'energy', hue='track_genre', alpha= 0.6, palette='viridis') 
+            filtered_df = df[df['track_genre'].isin(genres)]
+            sbn.scatterplot(data=filtered_df, x='danceability', y = 'energy', hue='track_genre', alpha= 0.6, edgecolor = 'white', linewidth = 0.5) 
         else:
-            sbn.scatterplot(data=df, x='danceability', y='energy', alpha=0.6, color = 'purple')
+            sbn.scatterplot(data=df, x='danceability', y='energy', alpha=0.6, color = 'purple', edgecolor = 'white', linewidth = 0.5)
 
-        plt.title("Scatter chart : Danceability & Energy")
-        plt.xlabel("Danceability")
-        plt.ylabel("Energy")
+        plt.title("Scatter chart : Danceability & Energy", fontsize =12, pad = 12)
+        plt.xlabel("Danceability", fontsize = 10)
+        plt.ylabel("Energy", fontsize = 10)
 
         if 'track_genre' in df.columns:
-            plt.legend(bbox_to_anchor=(1.05, 1), loc = 'upper left')
+            plt.legend(title = 'Genres', bbox_to_anchor =(1.02, 1), loc = 'upper left', borderaxespad =0, frameon = True)
         
         plt.tight_layout()
-        plt.savefig(f"{self.charts}/scatter-chat.png")
+        plt.savefig(f"{self.charts}/scatter-chat.png", dpi = 300, bbox_inches='tight') # dpi for better picture
         print('scatter chart created and saved in charts folder !')
         sleep(2)
     

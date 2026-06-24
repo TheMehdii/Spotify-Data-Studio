@@ -217,7 +217,7 @@ def main():
             elif choice == '5':
                 if not dataset_loaded:
                     sleep(3)
-                    print("\n Error: Please load the dataset first (Option 1).")
+                    print("\nError: Please load the dataset first (Option 1).")
                     sleep(3)
                     os.system('cls')
                     continue
@@ -231,7 +231,7 @@ def main():
             elif choice == '6':
                 if not dataset_loaded:
                     sleep(3)
-                    print("\n Error !: Please load the dataset first (Option 1).")
+                    print("\nError: Please load the dataset first (Option 1).")
                     sleep(3)
                     os.system('cls')
                     continue
@@ -242,7 +242,7 @@ def main():
                     visualizer.box(df_before= df_before_clean, df_after= analyzer.df , features= my_features)
                     visualizer.heatmap_matrix(matrix= matx)
                     visualizer.scatter(df=analyzer.df)
-                    print("\n charts genertad and saved in 'charts' directory !")
+                    print("\ncharts genertad and saved in 'charts' directory !")
                     sleep(2)
             
             elif choice == '7':
