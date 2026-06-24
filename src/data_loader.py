@@ -171,7 +171,7 @@ class DataLoader:
         self.file_path = file_path
         self.songs = []
 
-    def laod_data(self):
+    def load_data(self):
         self.songs= []
         if not os.path.exists(self.file_path):
             raise FileNotFoundError(f"{self.file_path} does not exists")

@@ -45,7 +45,7 @@ def main():
             elif choice == '1':
                 print("\n Loading dataset ...")
                 sleep(2)
-                df = loader.laod_data()
+                df = loader.load_data()
                 dataset_loaded = True
                 print(f"{cyan}Dataset loaded successfully!{reset}")
 

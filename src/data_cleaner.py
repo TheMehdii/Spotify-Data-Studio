@@ -6,14 +6,13 @@ from sklearn.impute import KNNImputer as SKLKNN
 # manage missing data
 
 class BaseImputer(ABC):
-
     @abstractmethod
     def impute(self, df: pd.DataFrame, columns : list) -> pd.DataFrame :  #using type hinting
         pass
 
 class MeanImputer(BaseImputer) : #found missing data by using avarega method by subset from BaseImputer
     def impute(self, df : pd.DataFrame, columns : list) -> pd.DataFrame:
-        df_copy = df.copy() # using copy dataframe not main dataframe
+        df_copy = df.copy() # using a copy from dataframe not main dataframe
         for col in columns:
             if col in df_copy.columns:
                 ava_value = df_copy[col].mean()
@@ -28,10 +27,10 @@ class MedianImputer(BaseImputer) : #found missing data by using median
                 med_value = df_copy[col].median()
                 df_copy[col] = df_copy[col].fillna(med_value)
         return df_copy
-    
+
 class KNNImputer(BaseImputer): #found missing data by using KNN
     def __init__(self, n_neighbor : int = 5 ):
-        self.neighbor = n_neighbor
+        self.n_neighbor = n_neighbor
     
     def impute(self, df: pd.DataFrame, columns:list) -> pd.DataFrame :
         df_copy = df.copy()
@@ -39,14 +38,14 @@ class KNNImputer(BaseImputer): #found missing data by using KNN
         valid_cols = [c for c in columns if c in df_copy and pd.api.types.is_numeric_dtype(df_copy[c])] #checkin valid col and type is number
 
         if valid_cols:
-            imputer = SKLKNN(neighbor= self.neighbor)
+            imputer = SKLKNN(n_neighbor= self.n_neighbor)
             df_copy[valid_cols] = imputer.fit_transform(df_copy[valid_cols]) #fit data by same type and around five data 
 
         
         return df_copy
 
 
-#   manage outlier data 
+# manage outlier data 
 
 class BaseOutlierHandler(ABC) : 
     @abstractmethod
@@ -55,7 +54,7 @@ class BaseOutlierHandler(ABC) :
         pass
 
 
-class IQROutllierHandler(BaseOutlierHandler):
+class IQROutllierHandler(BaseOutlierHandler):   #https://en.wikipedia.org/wiki/Interquartile_range
 
     def handle(self, df : pd.DataFrame, columns : list) -> pd.DataFrame :
         df_copy = df.copy()
@@ -74,9 +73,9 @@ class IQROutllierHandler(BaseOutlierHandler):
 
         return df_copy
 
-class ZScoreOutlierHandler(BaseOutlierHandler):
+class ZScoreOutlierHandler(BaseOutlierHandler): # https://en.wikipedia.org/wiki/Standard_score 
 
-    def __init__(self, bound:float = 3.0):
+    def __init__(self, bound: float = 3.0):
         self.bound = bound
 
     def handle(self, df: pd.DataFrame, columns: list) -> pd.DataFrame :
@@ -91,7 +90,7 @@ class ZScoreOutlierHandler(BaseOutlierHandler):
                 if enh == 0:
                     continue
 
-                z_score = (df_copy[col] - ava) / enh # https://en.wikipedia.org/wiki/Standard_score 
+                z_score = (df_copy[col] - ava) / enh 
 
                 df_copy[col] = np.where(abs(z_score) > self.bound, ava, df_copy[col])
         
