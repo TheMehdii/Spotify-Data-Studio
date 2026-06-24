@@ -29,8 +29,8 @@ class MedianImputer(BaseImputer) : #found missing data by using median
         return df_copy
 
 class KNNImputer(BaseImputer): #found missing data by using KNN
-    def __init__(self, n_neighbor : int = 5 ):
-        self.n_neighbor = n_neighbor
+    def __init__(self, n_neighbors : int = 5 ):
+        self.n_neighbors = n_neighbors
     
     def impute(self, df: pd.DataFrame, columns:list) -> pd.DataFrame :
         df_copy = df.copy()
@@ -38,7 +38,7 @@ class KNNImputer(BaseImputer): #found missing data by using KNN
         valid_cols = [c for c in columns if c in df_copy and pd.api.types.is_numeric_dtype(df_copy[c])] #checkin valid col and type is number
 
         if valid_cols:
-            imputer = SKLKNN(n_neighbor= self.n_neighbor)
+            imputer = SKLKNN(n_neighbors= self.n_neighbors)
             df_copy[valid_cols] = imputer.fit_transform(df_copy[valid_cols]) #fit data by same type and around five data 
 
         

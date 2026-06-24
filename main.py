@@ -6,6 +6,8 @@ import src.data_cleaner
 import uuid # for generate random track_id by using hex
 import sys
 from time import sleep
+from emoji import emojize
+import os
 
 green = "\033[92m"
 cyan = "\033[96m"
@@ -17,7 +19,7 @@ def menu():
 
     
     print(f"{cyan}╔═════════════════════════════════════════════════════════════════════════╗{reset}")
-    print(f"{cyan}║{reset}            {green}Spotify Data Studio & Management System{reset}                      {cyan}║{reset}")
+    print(emojize(f"{cyan}║{reset}            {green}Spotify Data Studio & Management System 🎵{reset}                   {cyan}║{reset}"))
     print(f"{cyan}╠═════════════════════════════════════════════════════════════════════════╣{reset}")
     print(f"{cyan}║{reset}  1. Load Dataset & View Missing Values Report                           {cyan}║{reset}")
     print(f"{cyan}║{reset}  2. Clean Missing Values (Mean / Median / KNN)                          {cyan}║{reset}")
@@ -42,52 +44,60 @@ def main():
             if not choice:
                 print("give me a number please (1-7) !")
                 sleep(2)
+                os.system('cls')
                 continue
 
             elif choice == '1':
-                print("\n Loading dataset ...")
+                print("\nLoading dataset ...")
                 sleep(2)
+                
                 loader.load_data()
                 analyzer = DataAnalyzer(loader.songs)
                 df_before_clean = analyzer.df.copy()
                 dataset_loaded = True
-                print(f"    {cyan}Dataset loaded successfully!{reset}")
-                sleep(2)
+                print(f"\n{cyan}Dataset loaded successfully!{reset} ✅")
+                sleep(3)
+                os.system('cls')
 
             elif choice =='2':
                 if not dataset_loaded :
-                    print("\n Error : please load dataset first (option 1)")
-                    sleep(5)
+                    sleep(3)
+                    print("\nError : please load dataset first (option 1)")
+                    sleep(3)
+                    os.system('cls')
                     continue
                 else:
-                    print('wait ...')
+                    print('Wait...')
                     sleep(2)
                     while True:
-                        choice2 = input('Clean Missing Values by(Mean?/ Median? / KNN?)')
+                        choice2 = input('Clean Missing Values by (Mean?/ Median? / KNN?) : ')
                         columns_impute =['popularity', 'danceability', 'energy', 'loudness', 'tempo']
                         if choice2 == 'Mean':
-                            print('using Mean ...')
+                            print('Using Mean...')
                             sleep(2)
                             imputer = src.data_cleaner.MeanImputer()
                             analyzer.df = imputer.impute(analyzer.df, columns_impute)
-                            print('Mean used !')
+                            print('Mean used!')
                             sleep(2)
+                            os.system('cls')
                             break
                         elif choice2 == 'Median':
-                            print('using Median ...')
+                            print('Using Median...')
                             sleep(2)
                             imputer= src.data_cleaner.MedianImputer()
                             analyzer.df = imputer.impute(analyzer.df, columns_impute)
-                            print('Median used !')
+                            print('Median used!')
                             sleep(2)
+                            os.system('cls')
                             break
                         elif choice2 == "KNN":
-                            print('using KNN ...')
+                            print('Using KNN...')
                             sleep(2)
                             imputer = src.data_cleaner.KNNImputer()
                             analyzer.df = imputer.impute(analyzer.df, columns_impute)
-                            print('KNN used !')
+                            print('KNN used!')
                             sleep(2)
+                            os.system('cls')
                             break
                         else : 
                             print("please give these option (Mean or Median or KNN)")
@@ -95,32 +105,46 @@ def main():
             
             elif choice == '3':
                 if not dataset_loaded:
-                        print("\n Error: Please load the dataset first (Option 1).")
+                        sleep(3)
+                        print("\nError: Please load the dataset first (Option 1).")
+                        sleep(3)
+                        os.system('cls')
                         continue
                 else:
                     while True:
-                        choice3 = input('which one ? (IQR/Z-Score)')
+                        choice3 = input('which one ? (IQR / Z-Score) : ')
                         columns_handle =['popularity', 'danceability', 'energy', 'loudness', 'tempo']
 
                         if choice3 == 'IQR':
                             sleep(2)
                             handler = src.data_cleaner.IQROutllierHandler()
                             analyzer.df = handler.handle(analyzer.df, columns_handle)
-                            print('IQR Outlier Handleing  used successfully !')
-                            sleep(2)
+                            sleep(3)
+                            print('IQR Outlier Handleing used successfully !')
+                            sleep(3)
+                            os.system('cls')
                             break
 
                         elif choice3 =='Z-Score':
                             handler = src.data_cleaner.ZScoreOutlierHandler()
                             analyzer.df = handler.handle(analyzer.df, columns_handle)
+                            sleep(3)
                             print('Z-Score Out lier handling used successfully !')
-                            sleep(2)
+                            sleep(3)
+                            os.system('cls')
                             break
+
+                        else :
+                            print('Write correctly and give me an option (IQR or Z-Score)')
+                            sleep(4)
                         
             elif choice == '4':
 
                 if not dataset_loaded :
-                    print("\nError !: Please load the dataset first (Option 1). ")
+                    sleep(3)
+                    print("\nError: Please load the dataset first (Option 1).")
+                    sleep(3)
+                    os.system('cls')
                     continue
 
                 print("\n" + "="*20 + " Add a New Song " + "="*20)
@@ -130,6 +154,7 @@ def main():
                     genre = input("Enter genre: ").strip()
                     
                     if not track_name or not artists or not genre:
+                        sleep(2)
                         raise ValueError("Track name, artists, and genre cannot be empty!")
 
                     popularity = int(input("Enter popularity (0-100): "))
@@ -179,9 +204,10 @@ def main():
                     new_row = {field: getattr(new_song, field) for field in new_song.Features}
                     analyzer.df = pd.concat([analyzer.df, pd.DataFrame([new_row])], ignore_index=True)
 
-                    
-                    print("\n new song created successfully and append!")
-                    sleep(2)
+                    sleep(3)
+                    print("\nnew song created successfully and append!")
+                    sleep(3)
+                    os.system('cls')
 
                 except ValueError as ve:
                     print(f"\n Input Validation Error: {ve}")
@@ -190,11 +216,13 @@ def main():
             
             elif choice == '5':
                 if not dataset_loaded:
-                    print("\n Error !: Please load the dataset first (Option 1).")
-                    sleep(2)
+                    sleep(3)
+                    print("\n Error: Please load the dataset first (Option 1).")
+                    sleep(3)
+                    os.system('cls')
                     continue
                 else :
-                    print("\n Calculate Genre Insights & Correlation Matrix ...")
+                    print("\nCalculate Genre Insights & Correlation Matrix ...")
                     sleep(3)
                     matx = analyzer.get_matrix()
                     print("matrix generated !")
@@ -202,11 +230,13 @@ def main():
                 
             elif choice == '6':
                 if not dataset_loaded:
+                    sleep(3)
                     print("\n Error !: Please load the dataset first (Option 1).")
-                    sleep(2)
+                    sleep(3)
+                    os.system('cls')
                     continue
                 else :
-                    print("\n Generating Advanced Visualizations ...")
+                    print("\nGenerating Advanced Visualizations ...")
                     matx = analyzer.get_matrix()
                     my_features = ['danceability', 'energy', 'loudness', 'tempo']
                     visualizer.box(df_before= df_before_clean, df_after= analyzer.df , features= my_features)
@@ -221,7 +251,9 @@ def main():
                 sys.exit()
             
             else :
-                print("\n Invalid choice! Please select a number from 1 to 7.")
+                print("\nInvalid choice! Please select a number from 1 to 7.")
+                sleep(4)
+                os.system('cls')
         except Exception as e:
             print(f"\n An unexpected error: {e}")
             print(" Returning  to the main menu...")
