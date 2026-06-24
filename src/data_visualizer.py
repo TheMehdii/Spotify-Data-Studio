@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sbn
 import pandas as pd
 import os
+from time import sleep
 
 class DataVisualizer:
     def __init__(self, charts = "charts" ): #name of output file
@@ -12,33 +13,38 @@ class DataVisualizer:
 
         sbn.set_theme(style="whitegrid") #backgrond of charts
     
-    def box(self, df_befor : pd.DataFrame, df_after : pd.DataFrame, featurs: list) :
+    def box(self, df_before : pd.DataFrame, df_after : pd.DataFrame, features: list) :
 
-        if df_befor.empty :
+        if df_before.empty :
             print("I can't found any data!")
             return
         
+        valid_features_before = [f for f in features if f in df_before.columns]
+        
         if df_after is None or df_after.empty :
             fig, axis = plt.subplots(figsize=(10, 6))
-            sbn.boxenplot(data=df_befor[featurs], ax=axis, palette="vlag")
+            sbn.boxenplot(data=df_before[valid_features_before], ax=axis, palette="vlag")
             axis.set_title("Primary Data")
             axis.tick_params(axis='x', rotation = 45)
         else:
             fig, axis = plt.subplots(1, 2, figsize=(14, 6)) #general shape of box-plot
 
-            # befor clean
-            sbn.boxenplot(data=df_befor[featurs], ax = axis[0], palette="vlag")
-            axis[0].set_title("Befor cleaning data")
+            # before clean
+            sbn.boxenplot(data=df_before[valid_features_before], ax = axis[0], palette="vlag")
+            axis[0].set_title("Before cleaning data")
             axis[0].tick_params(axis='x', rotation = 45)
 
             # after clean
-            sbn.boxenplot(data=df_after[featurs], ax = axis[1], palette="Deep")
+            valid_features_after = [f for f in features if f in df_after.columns]
+            sbn.boxenplot(data=df_after[valid_features_after], ax = axis[1], palette="deep")
             axis[1].set_title("After cleaning data")
             axis[1].tick_params(axis='x', rotation = 45)
 
         plt.tight_layout() # cut and edit
         plt.savefig(f"{self.charts}/box-chart.png")
-        plt.show()
+        print('box chart created and saved in charts folder !')
+        sleep(2)
+        
 
     def scatter(self, df: pd.DataFrame):
         if df.empty:
@@ -47,8 +53,8 @@ class DataVisualizer:
         plt.figure(figsize=(8, 6)) #draw chart
 
 
-        if 'genre' in df.columns:
-            sbn.scatterplot(data=df, x='danceability', y = 'energy', hue='genre', alpha= 0.6, palette='viridis') 
+        if 'track_genre' in df.columns:
+            sbn.scatterplot(data=df, x='danceability', y = 'energy', hue='track_genre', alpha= 0.6, palette='viridis') 
         else:
             sbn.scatterplot(data=df, x='danceability', y='energy', alpha=0.6, color = 'purple')
 
@@ -56,12 +62,13 @@ class DataVisualizer:
         plt.xlabel("Danceability")
         plt.ylabel("Energy")
 
-        if 'genre' in df.columns:
+        if 'track_genre' in df.columns:
             plt.legend(bbox_to_anchor=(1.05, 1), loc = 'upper left')
         
         plt.tight_layout()
         plt.savefig(f"{self.charts}/scatter-chat.png")
-        plt.show()
+        print('scatter chart created and saved in charts folder !')
+        sleep(2)
     
     def heatmap_matrix(self, matrix : pd.DataFrame):
         if matrix.empty:
@@ -75,4 +82,5 @@ class DataVisualizer:
         plt.title("heatmap matrix for audio features")
         plt.tight_layout()
         plt.savefig(f"{self.charts}/heatmap_matrix_chart.png")
-        plt.show()
+        print('heatmap matrix chart created and saved in charts folder !')
+        sleep(2)

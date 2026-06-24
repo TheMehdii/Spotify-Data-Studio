@@ -2,17 +2,20 @@ import os
 import csv
 
 class Song:
-    Featurs = ['track_id', 'artists', 'album_name', 'track_name', 'popularity', 'duration_ms', 'explicit', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature', 'track_genre']
+    Features = ['track_id', 'artists', 'album_name', 'track_name', 'popularity', 'duration_ms', 'explicit', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature', 'track_genre']
    
     def __init__(self, track_id, artists, album_name, track_name, popularity, duration_ms, explicit, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, time_signature, track_genre):
+                # Textual and Logical features
         self._track_id = track_id
         self._artists = artists
         self._album_name = album_name # (_) for avoid from settar error (read-only)
         self._track_name = track_name
         self._track_genre = track_genre
+        self._explicit = explicit if isinstance(explicit, bool) else (str(explicit).lower() == "true")
+
+            # Numeric features
         self.popularity = int(popularity)
         self.duration_ms =  int(duration_ms)
-        self.explicit = explicit if isinstance(explicit, bool) else (str(explicit).lower() == "true")
         self.danceability = float(danceability)
         self.energy = float(energy)
         self.key = int(key)
@@ -164,6 +167,10 @@ class Song:
     @property
     def track_genre(self):
         return self._track_genre
+    
+    @property
+    def explicit(self):
+        return self._explicit 
 
 
 class DataLoader:
@@ -204,24 +211,24 @@ class DataLoader:
         if vojod_file:
             try:
                 with open(self.file_path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
+                    lines  = list(csv.reader(f))
                     if len(lines) > 1:
-                        last_line = lines[-1].strip()
-                        last_index = last_line.split(',')[0]
-                        if last_index.isdigit():
+                        last_line = lines[-1]
+                        last_index = last_line[0]
+                        if last_index and last_index.isdigit(): # checking last line is not empty and it is numeric
                             next_col = int(last_index) + 1
             except Exception :
                 next_col = len(self.songs) + 13333333 # just a random number
 
 
         with open(self.file_path, "a", encoding= 'utf-8', newline='') as file :
-            fieldnames = [''] + song.Featurs # creating a col in dataset
-            writer = csv.DictWriter(file, fieldnames= fieldnames) # write featurs for any song
+            fieldnames = [''] + song.Features # creating a col in dataset
+            writer = csv.DictWriter(file, fieldnames= fieldnames) # write features for any song
 
             if not vojod_file:
                 writer.writeheader() # if col is not exists it writes
             
-            new_row = {field : getattr(song, field) for field in song.Featurs}      #getarr = access value of featurs whitout song.featurs and avoid repeat (dry)
+            new_row = {field : getattr(song, field) for field in song.Features}      #getarr = access value of features whitout song.features and avoid repeat (dry)
             new_row[''] = next_col
             writer.writerow(new_row)
 

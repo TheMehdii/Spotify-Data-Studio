@@ -1,6 +1,7 @@
 from src.data_loader import DataLoader, Song
 from src.data_analyzer import DataAnalyzer
 from src.data_visualizer import DataVisualizer
+import pandas as pd
 import src.data_cleaner 
 import uuid # for generate random track_id by using hex
 import sys
@@ -16,7 +17,7 @@ def menu():
 
     
     print(f"{cyan}╔═════════════════════════════════════════════════════════════════════════╗{reset}")
-    print(f"{cyan}║{reset}           {green}Spotify Data Studio & Management System{reset}                       {cyan}║{reset}")
+    print(f"{cyan}║{reset}            {green}Spotify Data Studio & Management System{reset}                      {cyan}║{reset}")
     print(f"{cyan}╠═════════════════════════════════════════════════════════════════════════╣{reset}")
     print(f"{cyan}║{reset}  1. Load Dataset & View Missing Values Report                           {cyan}║{reset}")
     print(f"{cyan}║{reset}  2. Clean Missing Values (Mean / Median / KNN)                          {cyan}║{reset}")
@@ -31,7 +32,8 @@ def main():
     visualizer = DataVisualizer(charts="charts")
     loader = DataLoader('Data/dataset.csv')
     dataset_loaded = False
-    df = None
+    analyzer = None
+    df_before_clean = None # for box plot
 
     while True:
         menu()
@@ -45,10 +47,11 @@ def main():
             elif choice == '1':
                 print("\n Loading dataset ...")
                 sleep(2)
-                df = loader.load_data()
+                loader.load_data()
+                analyzer = DataAnalyzer(loader.songs)
+                df_before_clean = analyzer.df.copy()
                 dataset_loaded = True
-                print(f"{cyan}Dataset loaded successfully!{reset}")
-
+                print(f"    {cyan}Dataset loaded successfully!{reset}")
                 sleep(2)
 
             elif choice =='2':
@@ -61,31 +64,34 @@ def main():
                     sleep(2)
                     while True:
                         choice2 = input('Clean Missing Values by(Mean?/ Median? / KNN?)')
-                        if not choice2 : 
-                            print("please give these option (Mean or Median or KNN)")
-                            sleep(2)
-                            continue
-                        elif choice2 == 'Mean':
+                        columns_impute =['popularity', 'danceability', 'energy', 'loudness', 'tempo']
+                        if choice2 == 'Mean':
                             print('using Mean ...')
                             sleep(2)
-                            src.data_cleaner.MeanImputer()
+                            imputer = src.data_cleaner.MeanImputer()
+                            analyzer.df = imputer.impute(analyzer.df, columns_impute)
                             print('Mean used !')
                             sleep(2)
                             break
                         elif choice2 == 'Median':
                             print('using Median ...')
                             sleep(2)
-                            src.data_cleaner.MedianImputer()
+                            imputer= src.data_cleaner.MedianImputer()
+                            analyzer.df = imputer.impute(analyzer.df, columns_impute)
                             print('Median used !')
                             sleep(2)
                             break
                         elif choice2 == "KNN":
                             print('using KNN ...')
                             sleep(2)
-                            src.data_cleaner.KNNImputer()
+                            imputer = src.data_cleaner.KNNImputer()
+                            analyzer.df = imputer.impute(analyzer.df, columns_impute)
                             print('KNN used !')
                             sleep(2)
                             break
+                        else : 
+                            print("please give these option (Mean or Median or KNN)")
+                        sleep(2)
             
             elif choice == '3':
                 if not dataset_loaded:
@@ -94,27 +100,26 @@ def main():
                 else:
                     while True:
                         choice3 = input('which one ? (IQR/Z-Score)')
-                        if (type(choice3) != str or (choice3 != 'IQR' and  choice3 !='Z-Score')):
-                            print('please give me correct option (IQR/Z-Score)')
-                            sleep(4)
-                            continue
-                        else:
-                            print("\n Handling outliers (IQR/Z-Score)...")
+                        columns_handle =['popularity', 'danceability', 'energy', 'loudness', 'tempo']
+
+                        if choice3 == 'IQR':
                             sleep(2)
-                            if choice3 == 'IQR':
-                                src.data_cleaner.IQROutllierHandler()
-                                print('IQR used!')
-                                sleep(2)
-                                break
-                            elif choice3 =='Z-Score':
-                                src.data_cleaner.ZScoreOutlierHandler()
-                                print('Z-Score used!')
-                                sleep(2)
-                                break
+                            handler = src.data_cleaner.IQROutllierHandler()
+                            analyzer.df = handler.handle(analyzer.df, columns_handle)
+                            print('IQR Outlier Handleing  used successfully !')
+                            sleep(2)
+                            break
+
+                        elif choice3 =='Z-Score':
+                            handler = src.data_cleaner.ZScoreOutlierHandler()
+                            analyzer.df = handler.handle(analyzer.df, columns_handle)
+                            print('Z-Score Out lier handling used successfully !')
+                            sleep(2)
+                            break
                         
             elif choice == '4':
 
-                if not dataset_loaded or df is None:
+                if not dataset_loaded :
                     print("\nError !: Please load the dataset first (Option 1). ")
                     continue
 
@@ -142,7 +147,7 @@ def main():
                         'tempo': 120.0
                     }
 
-                    random_track_id = uuid.uuid4().hex[:22]
+                    random_track_id = uuid.uuid4().hex[:22] 
 
                     from src.data_loader import Song
                     new_song = Song(
@@ -167,13 +172,15 @@ def main():
                         time_signature=4
                     )
 
-
+                    # update csv datafile
                     loader.append_song(new_song)
+
+                    # update dataframe
+                    new_row = {field: getattr(new_song, field) for field in new_song.Features}
+                    analyzer.df = pd.concat([analyzer.df, pd.DataFrame([new_row])], ignore_index=True)
 
                     
                     print("\n new song created successfully and append!")
-                    sleep(2)
-                    print(f" Generated Object: {str(new_song)}")
                     sleep(2)
 
                 except ValueError as ve:
@@ -189,8 +196,7 @@ def main():
                 else :
                     print("\n Calculate Genre Insights & Correlation Matrix ...")
                     sleep(3)
-                    analyzer = DataAnalyzer(loader.songs)
-                    analyzer.get_matrix()
+                    matx = analyzer.get_matrix()
                     print("matrix generated !")
                     sleep(3)
                 
@@ -201,13 +207,11 @@ def main():
                     continue
                 else :
                     print("\n Generating Advanced Visualizations ...")
-                    analyzer = DataAnalyzer(loader.songs)
-                    df_finall = analyzer.df # giving an dictionary of dataframe not list!
                     matx = analyzer.get_matrix()
-                    my_features = ['_danceability', '_energy', '_loudness', '_tempo']
-                    visualizer.box(df_befor= df_finall, df_after= None, featurs= my_features)
+                    my_features = ['danceability', 'energy', 'loudness', 'tempo']
+                    visualizer.box(df_before= df_before_clean, df_after= analyzer.df , features= my_features)
                     visualizer.heatmap_matrix(matrix= matx)
-                    visualizer.scatter(df=df_finall)
+                    visualizer.scatter(df=analyzer.df)
                     print("\n charts genertad and saved in 'charts' directory !")
                     sleep(2)
             
@@ -221,6 +225,7 @@ def main():
         except Exception as e:
             print(f"\n An unexpected error: {e}")
             print(" Returning  to the main menu...")
+            sleep(3)
 
 if __name__ == "__main__":
     main()

@@ -1,40 +1,33 @@
 import pandas as pd
-import numpy as np
-import matplotlib as plt
-from typing import List, Dict
-import seaborn as sns
 
-class DataAnalyzer:
-    def __init__(self, songs : List):
+class DataAnalyzer :
+    def __init__(self, songs_list):
+        
+        data = []
+        for s in songs_list:
+            row = {field : getattr(s, field) for field in s.Features}
+            data.append(row)
 
-        self.songs = songs
-        self.df = self._convert_to_dataframe()
+        self.df = pd.DataFrame(data)
     
-    def _convert_to_dataframe(self) -> pd.DataFrame: #praivte method
+    def report_missing(self):
+        print("\n" + "="*15 + " Missing Values Report " + "="*15)
+        missing = self.df.isnull().sum()
 
-        if not self.songs:
-            return pd.DataFrame() # empty table
+        if missing.sum() > 0:
+            print(missing[missing > 0])
         
-        data = [song.__dict__ for song in self.songs] # saving information about each song by using dictionaries!
-        return pd.DataFrame(data)
+        else:
+            print("Perfect! No missing values found in the dataset.")
+        print("="*53)
     
-    def partition_songs(self) -> pd.DataFrame:
+    def get_matrix(self):
 
-        # partition songs by mean of numeric featurs
+        numeric_cols = [
+            'popularity', 'duration_ms', 'danceability', 'energy', 
+            'key', 'loudness', 'speechiness', 'acousticness', 
+            'instrumentalness', 'liveness', 'valence', 'tempo'
+        ]
 
-        if self.df.empty:
-            return pd.DataFrame()
-        
-        numeric_featurs = ['_popularity', '_duration_ms', '_danceability', '_energy', '_loudness', '_speechiness', '_acousticness', '_instrumentalness', '_liveness', '_valence', '_tempo']
-
-        partition = self.df.groupby('_track_genre')[numeric_featurs].mean()
-        return partition
-
-    def get_matrix(self) -> pd.DataFrame:
-
-        if self.df.empty:
-            return pd.DataFrame()
-        
-        features = ['_danceability', '_energy', '_loudness', '_speechiness', '_acousticness', '_instrumentalness', '_liveness', '_valence', '_tempo']
-        matrix = self.df[features].corr(method = 'pearson')
-        return matrix        
+        valid_cols = [c for c in numeric_cols if c in self.df.columns]
+        return self.df[valid_cols].corr()
