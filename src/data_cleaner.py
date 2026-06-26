@@ -58,6 +58,9 @@ class IQROutllierHandler(BaseOutlierHandler):   #https://en.wikipedia.org/wiki/I
 
     def handle(self, df : pd.DataFrame, columns : list) -> pd.DataFrame :
         df_copy = df.copy()
+
+        combined_mask = pd.Series(True, index=df_copy.index)
+
         for col in columns:
             if col in df_copy.columns and pd.api.types.is_numeric_dtype(df_copy[col]):
                 Q1 = df_copy[col].quantile(0.25) # first quarter : A number that is 25% of the numbers before it.
@@ -68,18 +71,20 @@ class IQROutllierHandler(BaseOutlierHandler):   #https://en.wikipedia.org/wiki/I
                 lower_b = Q1 - 1.5 * IQR
                 upper_b = Q3 + 1.5 * IQR
 
-                df_copy[col] = np.where(df_copy[col] < lower_b, lower_b, df_copy[col]) # Checking data with a lower bound
-                df_copy[col] = np.where(df_copy[col] > upper_b, upper_b, df_copy[col]) # Checking data with a upper bound
+                col_mask = (df_copy[col] >= lower_b) & (df_copy[col] <= upper_b)
+                combined_mask = combined_mask & col_mask
 
-        return df_copy
+        return df_copy[combined_mask].reset_index(drop=True)
 
 class ZScoreOutlierHandler(BaseOutlierHandler): # https://en.wikipedia.org/wiki/Standard_score 
 
-    def __init__(self, bound: float = 3.0):
+    def __init__(self, bound: float = 1.8):
         self.bound = bound
 
     def handle(self, df: pd.DataFrame, columns: list) -> pd.DataFrame :
         df_copy = df.copy()
+
+        combined_mask = pd.Series(True, index=df_copy.index)
 
         for col in columns:
             if col in df_copy.columns and pd.api.types.is_numeric_dtype(df_copy[col]):
@@ -92,6 +97,7 @@ class ZScoreOutlierHandler(BaseOutlierHandler): # https://en.wikipedia.org/wiki/
 
                 z_score = (df_copy[col] - ava) / enh 
 
-                df_copy[col] = np.where(abs(z_score) > self.bound, ava, df_copy[col])
+                col_mask = abs(z_score) <= self.bound
+                combined_mask = combined_mask & col_mask
         
-        return df_copy
+        return df_copy[combined_mask].reset_index(drop=True)

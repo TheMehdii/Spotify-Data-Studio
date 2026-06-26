@@ -14,7 +14,6 @@ cyan = "\033[96m"
 reset = "\033[0m"
     
 
-
 def menu():
 
     
@@ -174,7 +173,6 @@ def main():
 
                     random_track_id = uuid.uuid4().hex[:22] 
 
-                    from src.data_loader import Song
                     new_song = Song(
                         track_id=random_track_id,
                         artists=artists, 
@@ -237,9 +235,9 @@ def main():
                     continue
                 else :
                     print("\nGenerating Advanced Visualizations ...")
+                    my_features = 'tempo'
+                    visualizer.box(df_before= df_before_clean, df_after= analyzer.df , feature_name= my_features)
                     matx = analyzer.get_matrix()
-                    my_features = ['danceability', 'energy', 'loudness', 'tempo']
-                    visualizer.box(df_before= df_before_clean, df_after= analyzer.df , features= my_features)
                     visualizer.heatmap_matrix(matrix= matx)
                     visualizer.scatter(df=analyzer.df)
                     print("\ncharts genertad and saved in 'charts' directory !")

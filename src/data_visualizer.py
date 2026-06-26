@@ -13,32 +13,37 @@ class DataVisualizer:
 
         sbn.set_theme(style="whitegrid") #backgrond of charts
     
-    def box(self, df_before : pd.DataFrame, df_after : pd.DataFrame, features: list) :
+    def box(self, df_before : pd.DataFrame, df_after : pd.DataFrame, feature_name : str) :
 
         if df_before.empty :
             print("I can't found any data!")
             return
         
-        valid_features_before = [f for f in features if f in df_before.columns]
+
+        if feature_name not in df_before.columns:
+            print(f'Feature {feature_name} not found in df_before !')
+            return
         
-        if df_after is None or df_after.empty :
+        # getting data 
+        data_before = df_before[feature_name].squeeze()
+        data_after = df_after[feature_name].squeeze()        
+        
+        
+        if data_after is None or data_after.empty :
             fig, axis = plt.subplots(figsize=(10, 6))
-            sbn.boxenplot(data=df_before[valid_features_before], ax=axis, palette="vlag")
-            axis.set_title("Primary Data")
-            axis.tick_params(axis='x', rotation = 45)
+            sbn.boxenplot(x=data_before, ax=axis, color="#4c72b0")
+            axis.set_title(f"Primary Data ({feature_name.capitalize()})")
         else:
-            fig, axis = plt.subplots(1, 2, figsize=(14, 6)) #general shape of box-plot
+            fig, axis = plt.subplots(2, 1, figsize=(14, 6)) #general shape of box-plot
 
             # before clean
-            sbn.boxenplot(data=df_before[valid_features_before], ax = axis[0], palette="vlag")
-            axis[0].set_title("Before cleaning data")
-            axis[0].tick_params(axis='x', rotation = 45)
+            sbn.boxenplot(x=data_before, ax = axis[0], color="#c44e52")
+            axis[0].set_title(f"Before cleaning data ({feature_name.capitalize()})")
 
             # after clean
-            valid_features_after = [f for f in features if f in df_after.columns]
-            sbn.boxenplot(data=df_after[valid_features_after], ax = axis[1], palette="deep")
-            axis[1].set_title("After cleaning data")
-            axis[1].tick_params(axis='x', rotation = 45)
+            sbn.boxenplot(x=data_after, ax = axis[1], color="#55a868")
+            axis[1].set_title(f"After cleaning data ({feature_name.capitalize()})")
+
 
         plt.tight_layout() # cut and edit
         plt.savefig(f"{self.charts}/box-chart.png")
