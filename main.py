@@ -30,8 +30,9 @@ def menu():
     print(f"{cyan}╚═════════════════════════════════════════════════════════════════════════╝{reset}")
 
 def main():
+    dataset_path = 'Data/dataset.csv'
     visualizer = DataVisualizer(charts="charts")
-    loader = DataLoader('Data/dataset.csv')
+    loader = DataLoader(dataset_path)
     dataset_loaded = False
     analyzer = None
     df_before_clean = None # for box plot
@@ -101,6 +102,10 @@ def main():
                         else : 
                             print("please give these option (Mean or Median or KNN)")
                         sleep(2)
+                    analyzer.df.to_csv(dataset_path, index=False)   
+                    print(f"\n{green}Missing Values changed successfuly !{reset}")
+                    sleep(2)
+                    os.system('cls')
             
             elif choice == '3':
                 if not dataset_loaded:
@@ -136,6 +141,11 @@ def main():
                         else :
                             print('Write correctly and give me an option (IQR or Z-Score)')
                             sleep(4)
+
+                    analyzer.df.to_csv(dataset_path, index=False)   
+                    print(f"\n{green}Outlier Values changed successfuly !{reset}")
+                    sleep(2)
+                    os.system('cls')
                         
             elif choice == '4':
 
