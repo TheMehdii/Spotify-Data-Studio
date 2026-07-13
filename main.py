@@ -57,7 +57,7 @@ def main():
                 dataset_loaded = True
                 analyzer.report_missing()
                 print(f"\n{cyan}Dataset loaded successfully!{reset} ✅")
-                sleep(10)
+                sleep(8)
                 os.system('cls')
 
             elif choice =='2':
