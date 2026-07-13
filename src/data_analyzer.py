@@ -1,14 +1,12 @@
 import pandas as pd
 
 class DataAnalyzer :
-    def __init__(self, songs_list):
-        
-        data = []
-        for s in songs_list:
-            row = {field : getattr(s, field) for field in s.Features}
-            data.append(row)
+    def __init__(self, file_path_or_df):
+        if isinstance(file_path_or_df, str):
+            self.df = pd.read_csv(file_path_or_df)
+        else : 
+            self.df  = file_path_or_df
 
-        self.df = pd.DataFrame(data)
     
     def report_missing(self):
         print("\n" + "="*15 + " Missing Values Report " + "="*15)

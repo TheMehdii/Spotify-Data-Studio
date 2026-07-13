@@ -74,9 +74,9 @@ class IQROutllierHandler(BaseOutlierHandler):   #https://en.wikipedia.org/wiki/I
                 col_mask = (df_copy[col] >= lower_b) & (df_copy[col] <= upper_b)
                 combined_mask = combined_mask & col_mask
 
-        return df_copy[combined_mask].reset_index(drop=True)
+        return df_copy[combined_mask].reset_index(drop=True) # delete outlier rows!
 
-class ZScoreOutlierHandler(BaseOutlierHandler): # https://en.wikipedia.org/wiki/Standard_score 
+class ZScoreOutlierHandler(BaseOutlierHandler): # https://en.wikipedia.org/wiki/Standard_score  * Normal distribution *
 
     def __init__(self, bound: float = 1.8):
         self.bound = bound

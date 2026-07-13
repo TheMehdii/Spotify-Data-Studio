@@ -30,10 +30,13 @@ class Song:
         self.time_signature = int(time_signature)
     
     def _check(self, Feature : str, val: float, min_v : float = 0.0, max_v : float = 1.0): # for avoid from repeat (dry)
-        if not (min_v <= val <= max_v):
-            raise ValueError(f"{Feature}  range error ! it must be in range (({min_v})-({max_v})) not {val}")
-        else:
-            return val
+        try:
+            if not (min_v <= val <= max_v):
+                print(f"{Feature}  range error ! it must be in range (({min_v})-({max_v})) not {val}")
+                return None
+        except(ValueError, TypeError):
+            print(f"we have {Feature} missing or invalid data Error!")
+            return None
         
     @property
     def popularity(self):

@@ -52,11 +52,12 @@ def main():
                 sleep(2)
                 
                 loader.load_data()
-                analyzer = DataAnalyzer(loader.songs)
+                analyzer = DataAnalyzer(dataset_path)
                 df_before_clean = analyzer.df.copy()
                 dataset_loaded = True
+                analyzer.report_missing()
                 print(f"\n{cyan}Dataset loaded successfully!{reset} ✅")
-                sleep(3)
+                sleep(10)
                 os.system('cls')
 
             elif choice =='2':
@@ -104,7 +105,7 @@ def main():
                         sleep(2)
                     analyzer.df.to_csv(dataset_path, index=False)   
                     print(f"\n{green}Missing Values changed successfuly !{reset}")
-                    sleep(2)
+                    sleep(3)
                     os.system('cls')
             
             elif choice == '3':
@@ -144,7 +145,7 @@ def main():
 
                     analyzer.df.to_csv(dataset_path, index=False)   
                     print(f"\n{green}Outlier Values changed successfuly !{reset}")
-                    sleep(2)
+                    sleep(3)
                     os.system('cls')
                         
             elif choice == '4':
@@ -164,9 +165,16 @@ def main():
                     
                     if not track_name or not artists or not genre:
                         sleep(2)
+                        os.system('cls')
                         raise ValueError("Track name, artists, and genre cannot be empty!")
 
                     popularity = int(input("Enter popularity (0-100): "))
+                    if not (0 <= popularity <= 100):
+                        sleep(2)
+                        os.system('cls')
+                        raise ValueError("popularity must be in range (0-100)")
+                        
+                        
 
                     default_audio_features = {
                         'duration_ms': 200000,
